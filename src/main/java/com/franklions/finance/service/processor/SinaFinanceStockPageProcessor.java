@@ -1,11 +1,11 @@
 package com.franklions.finance.service.processor;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.franklions.finance.domain.FinanceStockDay;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import us.codecraft.webmagic.Page;
+import us.codecraft.webmagic.Request;
 import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.processor.PageProcessor;
 import us.codecraft.webmagic.selector.Selectable;
@@ -41,6 +41,18 @@ public class SinaFinanceStockPageProcessor implements PageProcessor {
             dayInfo.setBlock(blockStr);
             dayInfo.setStockDate(page.getHtml().xpath("//*[@id=\"hqTime\"]/text(0)").get().trim().substring(0, 10));
 
+            //机构评级
+            Selectable grade = page.getHtml().xpath("/html/body/div[7]/div[3]/div[8]/div[2]/div[3]/div[2]/div/div/@style");
+            if(grade != null && grade.get() != null && grade.get().length() > 0) {
+                Integer igrade =0;
+                try {
+                      igrade = Integer.valueOf(grade.toString().replaceAll("left:", "").replaceAll("px;", ""));
+                    igrade = Double.valueOf (((igrade + 5) / 58.0)-0.5+1).intValue();
+                }catch (NumberFormatException e){
+                    igrade=0;
+                }
+                dayInfo.setStockGrade(igrade);
+            }
             //股票价格信息
             dayInfo.setCurrent(strToDecimal(page.getHtml().xpath("//*[@id=\"price\"]/text(0)").get().trim()));
             dayInfo.setChange(strToDecimal(page.getHtml().xpath("//*[@id=\"change\"]/text(0)").get().trim()));
@@ -83,7 +95,10 @@ public class SinaFinanceStockPageProcessor implements PageProcessor {
         } catch (Exception e) {
             logger.error("爬取股票代码过程中序列化股票数据异常：",e);
             //保存失败重新爬取
+            Request newRequest = page.getRequest();
+            newRequest.setUrl(page.getRequest().getUrl()+"?numtime="+ Math.random());
             page.addTargetRequest(page.getRequest());
+            page.setSkip(true);
         }
     }
 
@@ -92,11 +107,10 @@ public class SinaFinanceStockPageProcessor implements PageProcessor {
             return BigDecimal.ZERO;
         }
 
-        str = str.replaceAll("万手","")
-                .replaceAll("万元","")
+        str = str.replaceAll("手","")
                 .replaceAll("万","")
                 .replaceAll("亿","")
-                .replaceAll("亿元","")
+                .replaceAll("元","")
                 .replaceAll("%","");
 
         try {

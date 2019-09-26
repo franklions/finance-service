@@ -41,6 +41,12 @@ public class FinanceStockDay {
     private String block;
 
     /**
+     * 机构评级
+     */
+    @Column(name = "stock_grade")
+    private  Integer stockGrade;
+
+    /**
      * 日期
      */
     @Column(name = "stock_date")

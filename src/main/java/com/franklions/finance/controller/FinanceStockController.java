@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 import us.codecraft.webmagic.Spider;
+import us.codecraft.webmagic.scheduler.RedisScheduler;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -62,9 +63,10 @@ public class FinanceStockController {
            Spider spider =  Spider.create(new SinaFinanceStockPageProcessor())
                     .setDownloader(new HtmlUnitDownloader())
                     .addPipeline(new FinanceStockDayPipeline(mapper,stockDayService))
-                    .thread(10);
+                    .setScheduler(new RedisScheduler("localhost"))
+                    .thread(30);
 
-            List<FinanceStockInfo> stocks = stockService.selectAll();
+             List<FinanceStockInfo> stocks = stockService.selectAll();
 
             if(stocks != null && stocks.size() > 0) {
                 for(FinanceStockInfo info : stocks){

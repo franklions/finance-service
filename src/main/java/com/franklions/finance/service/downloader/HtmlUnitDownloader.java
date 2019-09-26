@@ -43,18 +43,23 @@ public class HtmlUnitDownloader implements Downloader {
 //                            return  d.findElement( By.xpath("/html/body/div[2]/div/div[2]/div/div[2]/div/div[3]/div[1]/div[2]" ));
 //                        }
 //                    });
-            WebElement element = new WebDriverWait(dirver,5).until(
+            WebElement element = new WebDriverWait(dirver,2).until(
                     ExpectedConditions.presenceOfElementLocated(By.className("pj_bar")));
+            String content = dirver.getPageSource();
+            page.setRawText(content);
+            page.setHtml(new Html(content, request.getUrl()));
+            page.setUrl(new PlainText(request.getUrl()));
+            page.setRequest(request);
         } catch (Exception e) {
             logger.error("获取页页元素超时异常:",e);
+        }finally {
+            try {
+                dirver.close();
+            }catch (Exception e){
+
+            }
         }
 
-        String content = dirver.getPageSource();
-        page.setRawText(content);
-        page.setHtml(new Html(content, request.getUrl()));
-        page.setUrl(new PlainText(request.getUrl()));
-        page.setRequest(request);
-        dirver.close();
         return page;
     }
 
