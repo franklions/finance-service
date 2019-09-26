@@ -10,6 +10,8 @@ import com.franklions.finance.service.FinanceFundService;
 import com.franklions.finance.service.pipeline.FinanceStockPipeline;
 import com.franklions.finance.service.FinanceStockService;
 import com.franklions.finance.service.processor.SinaFinanceStockPageProcessor;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -26,6 +28,7 @@ import java.util.concurrent.CompletableFuture;
  * @date 2019-09-19
  * @since Jdk 1.8
  */
+@Api(tags = "webmagic",description = "des")
 @RestController
 public class FinanceStockController {
 
@@ -45,6 +48,7 @@ public class FinanceStockController {
      * 刷新股票代码
      * @return
      */
+    @ApiOperation(value = "aaaaa", notes="aaaa")
     @PutMapping("/stock/refresh")
     public ResponseEntity<?> refreshStock(){
         CompletableFuture.runAsync(()->{
@@ -57,6 +61,7 @@ public class FinanceStockController {
         return ResponseEntity.ok().build();
     }
 
+    @ApiOperation(value = "bbb", notes="bbbb")
     @PutMapping("/stock/day")
     public ResponseEntity<?> getDayData(){
         CompletableFuture.runAsync(()->{

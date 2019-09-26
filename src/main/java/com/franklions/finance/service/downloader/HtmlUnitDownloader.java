@@ -30,7 +30,7 @@ public class HtmlUnitDownloader implements Downloader {
     public Page download(Request request, Task task) {
         HtmlUnitDriver dirver= new HtmlUnitDriver();
         Page page = new Page();
-
+        String content="";
         try {
             //设置js脚本
             dirver.setJavascriptEnabled(true);
@@ -45,11 +45,7 @@ public class HtmlUnitDownloader implements Downloader {
 //                    });
             WebElement element = new WebDriverWait(dirver,2).until(
                     ExpectedConditions.presenceOfElementLocated(By.className("pj_bar")));
-            String content = dirver.getPageSource();
-            page.setRawText(content);
-            page.setHtml(new Html(content, request.getUrl()));
-            page.setUrl(new PlainText(request.getUrl()));
-            page.setRequest(request);
+            content = dirver.getPageSource();
         } catch (Exception e) {
             logger.error("获取页页元素超时异常:",e);
         }finally {
@@ -60,6 +56,10 @@ public class HtmlUnitDownloader implements Downloader {
             }
         }
 
+        page.setRawText(content);
+        page.setHtml(new Html(content, request.getUrl()));
+        page.setUrl(new PlainText(request.getUrl()));
+        page.setRequest(request);
         return page;
     }
 
