@@ -42,16 +42,20 @@ public class SinaFinanceStockPageProcessor implements PageProcessor {
             dayInfo.setStockDate(page.getHtml().xpath("//*[@id=\"hqTime\"]/text(0)").get().trim().substring(0, 10));
 
             //机构评级
-            Selectable grade = page.getHtml().xpath("/html/body/div[7]/div[3]/div[8]/div[2]/div[3]/div[2]/div/div/@style");
-            if(grade != null && grade.get() != null && grade.get().length() > 0) {
-                Integer igrade =0;
-                try {
-                      igrade = Integer.valueOf(grade.toString().replaceAll("left:", "").replaceAll("px;", ""));
-                    igrade = Double.valueOf (((igrade + 5) / 58.0)-0.5+1).intValue();
-                }catch (NumberFormatException e){
-                    igrade=0;
+            try {
+                Selectable grade = page.getHtml().xpath("/html/body/div[7]/div[3]/div[8]/div[2]/div[3]/div[2]/div/div/@style");
+                if (grade != null && grade.get() != null && grade.get().length() > 0) {
+                    Integer igrade = 0;
+                    try {
+                        igrade = Integer.valueOf(grade.toString().replaceAll("left:", "").replaceAll("px;", ""));
+                        igrade = Double.valueOf(((igrade + 5) / 58.0) - 0.5 + 1).intValue();
+                    } catch (NumberFormatException e) {
+                        igrade = 0;
+                    }
+                    dayInfo.setStockGrade(igrade);
                 }
-                dayInfo.setStockGrade(igrade);
+            }catch (NullPointerException e){
+
             }
             //股票价格信息
             dayInfo.setCurrent(strToDecimal(page.getHtml().xpath("//*[@id=\"price\"]/text(0)").get().trim()));
@@ -96,7 +100,7 @@ public class SinaFinanceStockPageProcessor implements PageProcessor {
             logger.error("爬取股票代码过程中序列化股票数据异常：",e);
             //保存失败重新爬取
             Request newRequest = page.getRequest();
-            newRequest.setUrl(page.getRequest().getUrl()+"?numtime="+ Math.random());
+            newRequest.setUrl(page.getUrl().get()+"?numtime="+ Math.random());
             page.addTargetRequest(page.getRequest());
             page.setSkip(true);
         }
