@@ -1,9 +1,11 @@
-package com.franklions.finance.service;
+package com.franklions.finance.service.pipeline;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.franklions.finance.domain.FinanceFundInfo;
 import com.franklions.finance.domain.FinanceStockInfo;
+import com.franklions.finance.service.FinanceFundService;
+import com.franklions.finance.service.FinanceStockService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import us.codecraft.webmagic.ResultItems;
@@ -24,10 +26,14 @@ public class FinanceStockPipeline implements Pipeline {
 
     private FinanceStockService stockService;
     private FinanceFundService fundService;
+    private ObjectMapper mapper;
 
-    public FinanceStockPipeline(FinanceStockService stockService, FinanceFundService fundService) {
+    public FinanceStockPipeline(FinanceStockService stockService,
+                                FinanceFundService fundService,
+                                ObjectMapper objectMapper) {
         this.stockService = stockService;
         this.fundService = fundService;
+        this.mapper = objectMapper;
     }
 
     @Override
@@ -36,7 +42,6 @@ public class FinanceStockPipeline implements Pipeline {
             String jsonStr = resultItems.get("stocks");
             if(jsonStr != null && jsonStr != "")
             {
-                ObjectMapper mapper = new ObjectMapper();
                 try {
                     List<FinanceStockInfo> dataList = mapper.readValue(jsonStr, new TypeReference<List<FinanceStockInfo>>() {});
 

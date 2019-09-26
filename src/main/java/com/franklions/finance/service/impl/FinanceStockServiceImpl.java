@@ -25,4 +25,9 @@ public class FinanceStockServiceImpl implements FinanceStockService {
         mapper.batchSaveAppend(dataList);
         return ;
     }
+
+    @Override
+    public List<FinanceStockInfo> selectAll() {
+        return mapper.selectAll();
+    }
 }

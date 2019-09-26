@@ -12,4 +12,7 @@ import java.util.List;
  */
 public interface FinanceStockService {
     void batchSave(List<FinanceStockInfo> dataList);
+
+    List<FinanceStockInfo> selectAll();
+
 }

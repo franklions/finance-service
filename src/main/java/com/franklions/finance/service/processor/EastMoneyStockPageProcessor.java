@@ -1,4 +1,4 @@
-package com.franklions.finance.service;
+package com.franklions.finance.service.processor;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,9 +22,9 @@ import java.util.List;
  * @date 2019-09-18
  * @since Jdk 1.8
  */
-public class EasyMoneyStockPageProcessor implements PageProcessor {
+public class EastMoneyStockPageProcessor implements PageProcessor {
 
-    private static final Logger logger = LoggerFactory.getLogger(EasyMoneyStockPageProcessor.class);
+    private static final Logger logger = LoggerFactory.getLogger(EastMoneyStockPageProcessor.class);
 
     @Override
     public void process(Page page) {
