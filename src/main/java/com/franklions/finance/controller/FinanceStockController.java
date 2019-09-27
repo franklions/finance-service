@@ -69,7 +69,7 @@ public class FinanceStockController {
                     .setDownloader(new HtmlUnitDownloader())
                     .addPipeline(new FinanceStockDayPipeline(mapper,stockDayService))
                     .setScheduler(new RedisScheduler("localhost"))
-                    .thread(30);
+                    .thread(10);
 
              List<FinanceStockInfo> stocks = stockService.selectAll();
 

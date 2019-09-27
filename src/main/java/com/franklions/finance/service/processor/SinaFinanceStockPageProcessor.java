@@ -55,7 +55,7 @@ public class SinaFinanceStockPageProcessor implements PageProcessor {
                     dayInfo.setStockGrade(igrade);
                 }
             }catch (NullPointerException e){
-
+                dayInfo.setStockGrade(0);
             }
             //股票价格信息
             dayInfo.setCurrent(strToDecimal(page.getHtml().xpath("//*[@id=\"price\"]/text(0)").get().trim()));
