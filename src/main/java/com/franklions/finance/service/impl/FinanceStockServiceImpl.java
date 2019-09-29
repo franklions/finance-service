@@ -30,4 +30,9 @@ public class FinanceStockServiceImpl implements FinanceStockService {
     public List<FinanceStockInfo> selectAll() {
         return mapper.selectAll();
     }
+
+    @Override
+    public void deleteClosedStock(String code) {
+        mapper.delete(new FinanceStockInfo(){{setStockCode(code);}});
+    }
 }

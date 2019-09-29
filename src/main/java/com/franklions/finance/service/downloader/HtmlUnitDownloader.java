@@ -1,5 +1,6 @@
 package com.franklions.finance.service.downloader;
 
+import com.franklions.finance.service.CustomHtmlUnitDriver;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
@@ -23,18 +24,25 @@ import us.codecraft.webmagic.selector.PlainText;
 public class HtmlUnitDownloader implements Downloader {
 
     private static final Logger logger = LoggerFactory.getLogger(HtmlUnitDownloader.class);
+//    final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20160101 Firefox/66.0";
 
     private int poolSize =1;
 
     @Override
     public Page download(Request request, Task task) {
-        HtmlUnitDriver dirver= new HtmlUnitDriver();
+//        BrowserVersion browser = new BrowserVersion.BrowserVersionBuilder(BrowserVersion.FIREFOX_60)
+//                .setApplicationName("Firefox")
+//                .setApplicationVersion("5.0 (Windows)")
+//                .setUserAgent(USER_AGENT)
+//                .build();
+        CustomHtmlUnitDriver driver= new CustomHtmlUnitDriver();
+        driver.modifyWebClient();
         Page page = new Page();
         String content="";
         try {
             //设置js脚本
-            dirver.setJavascriptEnabled(true);
-            dirver.get(request.getUrl());
+            driver.setJavascriptEnabled(true);
+            driver.get(request.getUrl());
 
 //            WebElement element= (new WebDriverWait(dirver, 1 )).until(
 //                    new ExpectedCondition<WebElement>(){
@@ -43,14 +51,15 @@ public class HtmlUnitDownloader implements Downloader {
 //                            return  d.findElement( By.xpath("/html/body/div[2]/div/div[2]/div/div[2]/div/div[3]/div[1]/div[2]" ));
 //                        }
 //                    });
-            WebElement element = new WebDriverWait(dirver,2).until(
+            WebElement element = new WebDriverWait(driver,2).until(
                     ExpectedConditions.presenceOfElementLocated(By.className("pj_bar")));
-            content = dirver.getPageSource();
+            content = driver.getPageSource();
         } catch (Exception e) {
-            logger.error("获取页页元素超时异常:",e);
+            logger.error("获取页页元素超时异常:"+page.getUrl().get(),e);
+            content = driver.getPageSource();
         }finally {
             try {
-                dirver.close();
+                driver.close();
             }catch (Exception e){
 
             }

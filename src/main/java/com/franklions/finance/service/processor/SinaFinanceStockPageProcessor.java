@@ -28,6 +28,25 @@ public class SinaFinanceStockPageProcessor implements PageProcessor {
     @Override
     public void process(Page page) {
         try {
+
+            //检查是否已退市 未上市 停牌股
+            try {
+                String closed = page.getHtml().xpath("//*[@id=\"closed\"]/text(0)").get();
+                if(closed.trim().equals("已退市") ||closed.trim().equals("未上市")){
+                    page.putField("closed", "true");
+                    page.putField("stockCode", page.getHtml().xpath("//*[@id=\"stockName\"]/span/text(0)").get().trim().substring(1, 7));
+                    return ;
+                }
+
+                String closedStyle = page.getHtml().xpath("//*[@id=\"closed\"]/@style").get();
+                if(closedStyle.trim().equals("display: block;")){
+                    page.setSkip(true);
+                    return;
+                }
+            }catch (Exception  ex){
+
+            }
+
             //取出内容
             FinanceStockDay dayInfo = new FinanceStockDay();
 
@@ -83,21 +102,27 @@ public class SinaFinanceStockPageProcessor implements PageProcessor {
             dayInfo.setLtgb(strToDecimal(hq_details.get(4).xpath("//tr/td[2]/text(0)").get().trim()));
             //主力散户资金流向
             Selectable flowTable = page.getHtml().xpath("//*[@id=\"MRFlow\"]/table/tbody/tr[2]");
-            dayInfo.setMainIn(strToDecimal(flowTable.xpath("//tr/td[1]/text(0)").get().trim()));
-            dayInfo.setMainOut(strToDecimal(flowTable.xpath("//tr/td[2]/text(0)").get().trim()));
-            dayInfo.setRetailIn(strToDecimal(flowTable.xpath("//tr/td[3]/text(0)").get().trim()));
-            dayInfo.setRetailOut(strToDecimal(flowTable.xpath("//tr/td[4]/text(0)").get().trim()));
-
+           try {
+               dayInfo.setMainIn(strToDecimal(flowTable.xpath("//tr/td[1]/text(0)").get().trim()));
+               dayInfo.setMainOut(strToDecimal(flowTable.xpath("//tr/td[2]/text(0)").get().trim()));
+               dayInfo.setRetailIn(strToDecimal(flowTable.xpath("//tr/td[3]/text(0)").get().trim()));
+               dayInfo.setRetailOut(strToDecimal(flowTable.xpath("//tr/td[4]/text(0)").get().trim()));
+           }catch (Exception ex){
+               dayInfo.setMainIn(BigDecimal.ZERO);
+               dayInfo.setMainOut(BigDecimal.ZERO);
+               dayInfo.setRetailIn(BigDecimal.ZERO);
+               dayInfo.setRetailOut(BigDecimal.ZERO);
+           }
             dayInfo.setIsDeleted(false);
             dayInfo.setGmtCreate(new Date());
             dayInfo.setGmtModified(new Date());
             dayInfo.setTs(System.currentTimeMillis());
 
             ObjectMapper mapper = new ObjectMapper();
-
+            page.putField("closed", "false");
             page.putField("dayInfo", mapper.writeValueAsString(dayInfo));
         } catch (Exception e) {
-            logger.error("爬取股票代码过程中序列化股票数据异常：",e);
+            logger.error("爬取股票代码过程中序列化股票数据异常："+page.getHtml().xpath("//*[@id=\"stockName\"]").get(),e);
             //保存失败重新爬取
             Request newRequest = page.getRequest();
             newRequest.setUrl(page.getUrl().get()+"?numtime="+ Math.random());
@@ -127,5 +152,6 @@ public class SinaFinanceStockPageProcessor implements PageProcessor {
     @Override
     public Site getSite() {
         return Site.me().setUserAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:69.0) Gecko/20100101 Firefox/69.0");
+//        return  Site.me().setUserAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36");
     }
 }

@@ -15,4 +15,5 @@ public interface FinanceStockService {
 
     List<FinanceStockInfo> selectAll();
 
+    void deleteClosedStock(String code);
 }

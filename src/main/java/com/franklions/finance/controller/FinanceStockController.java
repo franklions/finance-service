@@ -67,7 +67,7 @@ public class FinanceStockController {
         CompletableFuture.runAsync(()->{
            Spider spider =  Spider.create(new SinaFinanceStockPageProcessor())
                     .setDownloader(new HtmlUnitDownloader())
-                    .addPipeline(new FinanceStockDayPipeline(mapper,stockDayService))
+                    .addPipeline(new FinanceStockDayPipeline(mapper,stockDayService,stockService))
                     .setScheduler(new RedisScheduler("localhost"))
                     .thread(10);
 
