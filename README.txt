@@ -3,3 +3,4 @@ srem set_finance.sina.com.cn http://finance.sina.com.cn/realstock/company/sz0024
 查看所有任务
 smembers set_finance.sina.com.cn
 
+java -jar .\finance-service-0.1.1.jar --spring.config.location=E:\finance-service\releases\application.properties
