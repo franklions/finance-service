@@ -3,17 +3,22 @@ package com.franklions.finance.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.franklions.finance.domain.FinanceStockInfo;
 import com.franklions.finance.service.FinanceStockDayService;
+import com.franklions.finance.service.FinanceStockGradeService;
 import com.franklions.finance.service.downloader.HtmlUnitDownloader;
+import com.franklions.finance.service.downloader.VipHtmlUnitDownloader;
 import com.franklions.finance.service.pipeline.FinanceStockDayPipeline;
+import com.franklions.finance.service.pipeline.FinanceStockGradePipeline;
 import com.franklions.finance.service.processor.EastMoneyStockPageProcessor;
 import com.franklions.finance.service.FinanceFundService;
 import com.franklions.finance.service.pipeline.FinanceStockPipeline;
 import com.franklions.finance.service.FinanceStockService;
 import com.franklions.finance.service.processor.SinaFinanceStockPageProcessor;
+import com.franklions.finance.service.processor.SinaFinanceStockVipPageProcessor;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 import us.codecraft.webmagic.Spider;
@@ -40,6 +45,9 @@ public class FinanceStockController {
 
     @Autowired
     FinanceStockDayService stockDayService;
+
+    @Autowired
+    FinanceStockGradeService gradeService;
 
     @Autowired
     ObjectMapper mapper;
@@ -79,6 +87,23 @@ public class FinanceStockController {
                 }
                 spider.run();
             }
+        });
+
+        return ResponseEntity.ok().build();
+    }
+
+    @ApiOperation(value = "cccc", notes="cccc")
+    @PutMapping("/stock/grade/{code}")
+    public ResponseEntity<?> getGradeData(@PathVariable("code") String code){
+        CompletableFuture.runAsync(()->{
+            Spider spider =  Spider.create(new SinaFinanceStockVipPageProcessor())
+                    .setDownloader(new VipHtmlUnitDownloader())
+                    .addPipeline(new FinanceStockGradePipeline(mapper,gradeService))
+//                    .setScheduler(new RedisScheduler("localhost"))
+                    .thread(1);
+            spider.addUrl("http://vip.stock.finance.sina.com.cn/q/go.php/vIR_StockSearch/key/"+code+".phtml?num=60&p=1");
+            spider.run();
+
         });
 
         return ResponseEntity.ok().build();

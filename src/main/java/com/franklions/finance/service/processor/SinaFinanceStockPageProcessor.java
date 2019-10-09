@@ -15,7 +15,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**新浪财经股票信息爬取
+import static com.franklions.finance.utils.Utils.strToDecimal;
+
+/**
+ * 新浪财经股票信息爬取
  * @author flsh
  * @version 1.0
  * @date 2019-09-20
@@ -131,23 +134,7 @@ public class SinaFinanceStockPageProcessor implements PageProcessor {
         }
     }
 
-    private BigDecimal strToDecimal(String str) {
-        if(str == null || "".equals(str)){
-            return BigDecimal.ZERO;
-        }
 
-        str = str.replaceAll("手","")
-                .replaceAll("万","")
-                .replaceAll("亿","")
-                .replaceAll("元","")
-                .replaceAll("%","");
-
-        try {
-            return new BigDecimal(str);
-        }catch (Exception ex){
-            return BigDecimal.ZERO;
-        }
-    }
 
     @Override
     public Site getSite() {
