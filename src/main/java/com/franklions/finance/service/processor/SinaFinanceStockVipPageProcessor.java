@@ -54,7 +54,6 @@ public class SinaFinanceStockVipPageProcessor implements PageProcessor {
                 newGrade.setGmtModified(new Date());
                 newGrade.setTs(System.currentTimeMillis());
                 gradeList.add(newGrade);
-                break;
             }
         }
 
