@@ -55,14 +55,19 @@ public class SinaFinanceStockVipPageProcessor implements PageProcessor {
                 newGrade.setTs(System.currentTimeMillis());
                 gradeList.add(newGrade);
             }
+
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                page.putField("grades", mapper.writeValueAsString(gradeList));
+            } catch (JsonProcessingException e) {
+                logger.error("爬取股票机构评级信息序列化数据保存异常：", e);
+            }
+        }else
+        {
+            page.setSkip(true);
         }
 
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            page.putField("grades", mapper.writeValueAsString(gradeList));
-        } catch (JsonProcessingException e) {
-            logger.error("爬取股票机构评级信息序列化数据保存异常：", e);
-        }
+
     }
 
     @Override

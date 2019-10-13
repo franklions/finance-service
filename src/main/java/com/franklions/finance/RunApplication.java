@@ -1,13 +1,10 @@
 package com.franklions.finance;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.franklions.finance.service.downloader.VipHtmlUnitDownloader;
-import com.franklions.finance.service.processor.SinaFinanceStockVipPageProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import us.codecraft.webmagic.Spider;
 
 /**
  * @author flsh
