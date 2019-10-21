@@ -97,20 +97,21 @@ public class FinanceStockController {
     public ResponseEntity<?> getGradeData(@PathVariable("code") String code){
         CompletableFuture.runAsync(()->{
             Spider spider =  Spider.create(new SinaFinanceStockVipPageProcessor())
-                    .setDownloader(new VipHtmlUnitDownloader())
                     .addPipeline(new FinanceStockGradePipeline(mapper,gradeService))
                     .setScheduler(new RedisScheduler("localhost"))
                     .thread(10);
-//            spider.addUrl("http://vip.stock.finance.sina.com.cn/q/go.php/vIR_StockSearch/key/sh600396.phtml?num=60&p=1");
-//            spider.run();
-            List<FinanceStockInfo> stocks = stockService.selectAll();
-
-            if(stocks != null && stocks.size() > 0) {
-                for(FinanceStockInfo info : stocks){
-                    spider.addUrl(String.format("http://vip.stock.finance.sina.com.cn/q/go.php/vIR_StockSearch/key/%s%s.phtml?num=60&p=1",info.getStockType(),info.getStockCode()));
-                }
-                spider.run();
+            for(int i =1;i<10;i++) {
+                spider.addUrl("http://stock.finance.sina.com.cn/stock/go.php/vIR_RatingNewest/index.phtml?num=60&p="+i);
             }
+            spider.run();
+//            List<FinanceStockInfo> stocks = stockService.selectAll();
+//
+//            if(stocks != null && stocks.size() > 0) {
+//                for(FinanceStockInfo info : stocks){
+//                    spider.addUrl(String.format("http://vip.stock.finance.sina.com.cn/q/go.php/vIR_StockSearch/key/%s%s.phtml?num=60&p=1",info.getStockType(),info.getStockCode()));
+//                }
+//                spider.run();
+//            }
 
         });
 

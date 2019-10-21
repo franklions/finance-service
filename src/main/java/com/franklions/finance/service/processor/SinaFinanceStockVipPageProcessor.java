@@ -48,8 +48,8 @@ public class SinaFinanceStockVipPageProcessor implements PageProcessor {
                 newGrade.setAnalyst(node.xpath("//tr/td[6]/text(0)").get().trim());
                 newGrade.setBlock(node.xpath("//tr/td[7]/text(0)").get().trim());
                 newGrade.setGradeDate(node.xpath("//tr/td[8]/text(0)").get().trim());
-                newGrade.setStockPrice(strToDecimal(node.xpath("//tr/td[10]/span/text(0)").get().trim()));
-                newGrade.setStockChange(strToDecimal(node.xpath("//tr/td[11]/span/text(0)").get().trim()));
+//                newGrade.setStockPrice(strToDecimal(node.xpath("//tr/td[10]/span/text(0)").get().trim()));
+//                newGrade.setStockChange(strToDecimal(node.xpath("//tr/td[11]/span/text(0)").get().trim()));
                 newGrade.setGmtCreate(new Date());
                 newGrade.setGmtModified(new Date());
                 newGrade.setTs(System.currentTimeMillis());
