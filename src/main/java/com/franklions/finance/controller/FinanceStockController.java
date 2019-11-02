@@ -2,22 +2,22 @@ package com.franklions.finance.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.franklions.finance.domain.FinanceStockInfo;
-import com.franklions.finance.service.FinanceStockDayService;
-import com.franklions.finance.service.FinanceStockGradeService;
+import com.franklions.finance.service.*;
 import com.franklions.finance.service.downloader.HtmlUnitDownloader;
-import com.franklions.finance.service.downloader.VipHtmlUnitDownloader;
+import com.franklions.finance.service.downloader.MarketHtmlUnitDownloader;
 import com.franklions.finance.service.pipeline.FinanceStockDayPipeline;
 import com.franklions.finance.service.pipeline.FinanceStockGradePipeline;
+import com.franklions.finance.service.pipeline.FinanceStockMarketPipeline;
 import com.franklions.finance.service.processor.EastMoneyStockPageProcessor;
-import com.franklions.finance.service.FinanceFundService;
 import com.franklions.finance.service.pipeline.FinanceStockPipeline;
-import com.franklions.finance.service.FinanceStockService;
+import com.franklions.finance.service.processor.SinaFinanceStockMarketPageProcessor;
 import com.franklions.finance.service.processor.SinaFinanceStockPageProcessor;
 import com.franklions.finance.service.processor.SinaFinanceStockVipPageProcessor;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -48,6 +48,10 @@ public class FinanceStockController {
 
     @Autowired
     FinanceStockGradeService gradeService;
+
+    @Autowired
+    FinanceStockMarketService marketService;
+
 
     @Autowired
     ObjectMapper mapper;
@@ -100,8 +104,8 @@ public class FinanceStockController {
                     .addPipeline(new FinanceStockGradePipeline(mapper,gradeService))
                     .setScheduler(new RedisScheduler("localhost"))
                     .thread(10);
-            for(int i =1;i<10;i++) {
-                spider.addUrl("http://stock.finance.sina.com.cn/stock/go.php/vIR_RatingNewest/index.phtml?num=60&p="+i);
+            for(int i =1;i<35;i++) {
+                spider.addUrl("http://stock.finance.sina.com.cn/stock/go.php/vIR_RatingNewest/index.phtml?num=60&p="+i+"&numtime="+ Math.random());
             }
             spider.run();
 //            List<FinanceStockInfo> stocks = stockService.selectAll();
@@ -112,6 +116,24 @@ public class FinanceStockController {
 //                }
 //                spider.run();
 //            }
+
+        });
+
+        return ResponseEntity.ok().build();
+    }
+
+    @ApiOperation(value = "ddddd", notes="dddddd")
+    @GetMapping("/stock/market")
+    public ResponseEntity<?> getMarketData(){
+        CompletableFuture.runAsync(()->{
+            Spider.create(new SinaFinanceStockMarketPageProcessor())
+                    .setDownloader(new MarketHtmlUnitDownloader())
+                    .addPipeline(new FinanceStockMarketPipeline(mapper,marketService))
+                    .addUrl("https://finance.sina.com.cn/realstock/company/sh000001/nc.shtml?numtime="+ Math.random())
+                    .addUrl("http://finance.sina.com.cn/realstock/company/sz399001/nc.shtml?numtime="+ Math.random())
+                    .addUrl("http://finance.sina.com.cn/realstock/company/sz399006/nc.shtml?numtime="+ Math.random())
+                    .thread(1)
+                    .run();
 
         });
 

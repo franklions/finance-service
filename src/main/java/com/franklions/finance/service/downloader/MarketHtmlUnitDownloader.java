@@ -20,9 +20,9 @@ import us.codecraft.webmagic.selector.PlainText;
  * @date 2019-09-20
  * @since Jdk 1.8
  */
-public class VipHtmlUnitDownloader implements Downloader {
+public class MarketHtmlUnitDownloader implements Downloader {
 
-    private static final Logger logger = LoggerFactory.getLogger(VipHtmlUnitDownloader.class);
+    private static final Logger logger = LoggerFactory.getLogger(MarketHtmlUnitDownloader.class);
 //    final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20160101 Firefox/66.0";
 
     private int poolSize =1;
@@ -51,7 +51,7 @@ public class VipHtmlUnitDownloader implements Downloader {
 //                        }
 //                    });
             WebElement element = new WebDriverWait(driver,2).until(
-                    ExpectedConditions.presenceOfElementLocated(By.className("pages")));
+                    ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id=\"globalHf\"]")));
             content = driver.getPageSource();
         } catch (Exception e) {
             logger.error("获取页页元素超时异常:"+page.getUrl().get(),e);
