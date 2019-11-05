@@ -3,6 +3,7 @@ package com.franklions.finance.service.processor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.franklions.finance.domain.FinanceStockGrade;
+import com.franklions.finance.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import us.codecraft.webmagic.Page;
@@ -10,9 +11,8 @@ import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.processor.PageProcessor;
 import us.codecraft.webmagic.selector.Selectable;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.io.UnsupportedEncodingException;
+import java.util.*;
 
 import static com.franklions.finance.utils.Utils.strToDecimal;
 
@@ -30,6 +30,14 @@ public class SinaFinanceStockVipPageProcessor implements PageProcessor {
 
     @Override
     public void process(Page page) {
+
+        Map<String,String[]> params = new HashMap<>();
+        try {
+            Utils.parseParameters(params,page.getUrl().get().split("\\?")[1],"utf-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
         List<Selectable> nodeList = page.getHtml().xpath("/html/body/div[1]/div[5]/div[2]/div/div[1]/table/tbody/tr").nodes();
 
         List<FinanceStockGrade> gradeList = new ArrayList<>();
@@ -53,7 +61,10 @@ public class SinaFinanceStockVipPageProcessor implements PageProcessor {
                 newGrade.setGmtCreate(new Date());
                 newGrade.setGmtModified(new Date());
                 newGrade.setTs(System.currentTimeMillis());
-                gradeList.add(newGrade);
+
+                if(newGrade.getGradeDate().equals(params.get("today")[0])) {
+                    gradeList.add(newGrade);
+                }
             }
 
             ObjectMapper mapper = new ObjectMapper();

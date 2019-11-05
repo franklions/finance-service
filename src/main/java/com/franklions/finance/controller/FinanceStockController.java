@@ -104,18 +104,13 @@ public class FinanceStockController {
                     .addPipeline(new FinanceStockGradePipeline(mapper,gradeService))
                     .setScheduler(new RedisScheduler("localhost"))
                     .thread(10);
-            for(int i =1;i<35;i++) {
-                spider.addUrl("http://stock.finance.sina.com.cn/stock/go.php/vIR_RatingNewest/index.phtml?num=60&p="+i+"&numtime="+ Math.random());
+
+            String today = "2019-11-04";
+            Integer pages = 13;
+            for(int i =1;i<=pages;i++) {
+                spider.addUrl("http://stock.finance.sina.com.cn/stock/go.php/vIR_RatingNewest/index.phtml?num=60&p="+i+"&today="+today+"&numtime="+ Math.random());
             }
             spider.run();
-//            List<FinanceStockInfo> stocks = stockService.selectAll();
-//
-//            if(stocks != null && stocks.size() > 0) {
-//                for(FinanceStockInfo info : stocks){
-//                    spider.addUrl(String.format("http://vip.stock.finance.sina.com.cn/q/go.php/vIR_StockSearch/key/%s%s.phtml?num=60&p=1",info.getStockType(),info.getStockCode()));
-//                }
-//                spider.run();
-//            }
 
         });
 

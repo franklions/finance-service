@@ -45,8 +45,9 @@ public class FinanceStockGradePipeline implements Pipeline {
 
             try {
                 List<FinanceStockGrade> dataList = mapper.readValue(dayData, new TypeReference<List<FinanceStockGrade>>() {});
-
-                gradeService.batchSave(dataList);
+                if(dataList != null && dataList.size() > 0) {
+                    gradeService.batchSave(dataList);
+                }
             } catch (IOException e) {
                 logger.error("保存股票评级数据到数据库时发生异常：" + dayData, e);
             }
