@@ -97,7 +97,7 @@ public class FinanceStockController {
     }
 
     @ApiOperation(value = "cccc", notes="cccc")
-    @PutMapping("/stock/grade/{code}")
+    @GetMapping("/stock/grade/{code}")
     public ResponseEntity<?> getGradeData(@PathVariable("code") String code){
         CompletableFuture.runAsync(()->{
             Spider spider =  Spider.create(new SinaFinanceStockVipPageProcessor())
@@ -105,8 +105,8 @@ public class FinanceStockController {
                     .setScheduler(new RedisScheduler("localhost"))
                     .thread(10);
 
-            String today = "2019-11-04";
-            Integer pages = 13;
+            String today = "2019-11-10";
+            Integer pages = 4;
             for(int i =1;i<=pages;i++) {
                 spider.addUrl("http://stock.finance.sina.com.cn/stock/go.php/vIR_RatingNewest/index.phtml?num=60&p="+i+"&today="+today+"&numtime="+ Math.random());
             }

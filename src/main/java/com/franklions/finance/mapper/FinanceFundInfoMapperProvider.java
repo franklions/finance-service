@@ -17,7 +17,7 @@ public class FinanceFundInfoMapperProvider {
 
     public static String batchSaveAppend(@Param("list") List<FinanceFundInfo> dataList){
         StringBuilder sql = new StringBuilder();
-        sql.append(" INSERT INTO `finance_stock_db`.`finance_fund_info`(`fund_code`, `fund_name`, `fund_type`, " +
+        sql.append(" INSERT INTO `finance_fund_info`(`fund_code`, `fund_name`, `fund_type`, " +
                 "`is_deleted`, `gmt_create`, `gmt_modified`, `ts`) VALUES ");
         if(dataList !=null &&  dataList.size() > 0)
         {

@@ -16,7 +16,7 @@ public class FinanceStockInfoMapperProvider {
 
     public static String batchSaveAppend(@Param("list") List<FinanceStockInfo> dataList){
         StringBuilder sql = new StringBuilder();
-        sql.append(" INSERT INTO `finance_stock_db`.`finance_stock_info`(`stock_code`, `stock_name`, `stock_type`, " +
+        sql.append(" INSERT INTO `finance_stock_info`(`stock_code`, `stock_name`, `stock_type`, " +
                 "`is_deleted`, `gmt_create`, `gmt_modified`, `ts`) VALUES ");
         if(dataList !=null &&  dataList.size() > 0)
         {
