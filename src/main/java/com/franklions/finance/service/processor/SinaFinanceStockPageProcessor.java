@@ -42,7 +42,7 @@ public class SinaFinanceStockPageProcessor implements PageProcessor {
                 }
 
                 String closedStyle = page.getHtml().xpath("//*[@id=\"closed\"]/@style").get();
-                if(closedStyle.trim().equals("display: block;")){
+                if( closed.trim().equals("停牌") || closedStyle.trim().equals("display: block;")){
                     page.setSkip(true);
                     return;
                 }
