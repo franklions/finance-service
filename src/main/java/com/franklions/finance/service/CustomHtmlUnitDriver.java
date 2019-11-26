@@ -3,6 +3,8 @@ package com.franklions.finance.service;
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
 import com.gargoylesoftware.htmlunit.WebClient;
+import org.openqa.selenium.NoSuchSessionException;
+import org.openqa.selenium.NoSuchWindowException;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 
 /**
@@ -36,5 +38,15 @@ public class CustomHtmlUnitDriver extends HtmlUnitDriver {
 //        webClient.setJavaScriptTimeout(timeout);//设置JS执行的超时时间
 
         modifyWebClient(newWebClient);
+    }
+
+    public Boolean isClosed(){
+        try {
+            getCurrentWindow();
+        }catch (NoSuchWindowException | NoSuchSessionException e){
+            return true;
+        }
+
+        return false;
     }
 }

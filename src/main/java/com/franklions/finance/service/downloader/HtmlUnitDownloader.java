@@ -15,14 +15,19 @@ import us.codecraft.webmagic.downloader.Downloader;
 import us.codecraft.webmagic.selector.Html;
 import us.codecraft.webmagic.selector.PlainText;
 
+import java.io.Closeable;
+import java.io.IOException;
+
 /**
  * @author flsh
  * @version 1.0
  * @date 2019-09-20
  * @since Jdk 1.8
  */
-public class HtmlUnitDownloader implements Downloader {
+public class HtmlUnitDownloader implements Downloader, Closeable {
 
+
+    private static final ThreadLocal<CustomHtmlUnitDriver> driverPool = new ThreadLocal<>();
     private static final Logger logger = LoggerFactory.getLogger(HtmlUnitDownloader.class);
 //    final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20160101 Firefox/66.0";
 
@@ -35,7 +40,12 @@ public class HtmlUnitDownloader implements Downloader {
 //                .setApplicationVersion("5.0 (Windows)")
 //                .setUserAgent(USER_AGENT)
 //                .build();
-        CustomHtmlUnitDriver driver= new CustomHtmlUnitDriver();
+
+        CustomHtmlUnitDriver driver=driverPool.get();
+        if(driver == null ){
+            driver = new CustomHtmlUnitDriver();
+            driverPool.set(driver);
+        }
         driver.modifyWebClient();
         Page page = new Page();
         String content="";
@@ -55,14 +65,10 @@ public class HtmlUnitDownloader implements Downloader {
                     ExpectedConditions.presenceOfElementLocated(By.className("pj_bar")));
             content = driver.getPageSource();
         } catch (Exception e) {
-            logger.error("获取页页元素超时异常:"+page.getUrl().get(),e);
+            logger.error("获取页页元素超时异常:"+request.getUrl(),e);
             content = driver.getPageSource();
         }finally {
-            try {
-                driver.close();
-            }catch (Exception e){
 
-            }
         }
 
         page.setRawText(content);
@@ -75,5 +81,16 @@ public class HtmlUnitDownloader implements Downloader {
     @Override
     public void setThread(int threadNum) {
         this.poolSize = threadNum;
+    }
+
+    @Override
+    public void close() throws IOException {
+        CustomHtmlUnitDriver driver=driverPool.get();
+        if(driver != null ){
+            if(!driver.isClosed()){
+                driver.close();
+            }
+            driverPool.remove();
+        }
     }
 }
