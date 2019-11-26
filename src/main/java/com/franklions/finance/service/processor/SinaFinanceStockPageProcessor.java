@@ -40,9 +40,9 @@ public class SinaFinanceStockPageProcessor implements PageProcessor {
                     page.putField("stockCode", page.getHtml().xpath("//*[@id=\"stockName\"]/span/text(0)").get().trim().substring(1, 7));
                     return ;
                 }
-
-                String closedStyle = page.getHtml().xpath("//*[@id=\"closed\"]/@style").get();
-                if( closed.trim().equals("停牌") || closedStyle.trim().equals("display: block;")){
+                BigDecimal price = strToDecimal(page.getHtml().xpath("//*[@id=\"price\"]/text(0)").get().trim());
+                String closedStyle = page.getHtml().xpath("//*[@id=\"closed\"]/@style").toString();
+                if(price.compareTo(BigDecimal.ZERO)==0 || closedStyle.trim().equals("display: block;")){
                     page.setSkip(true);
                     return;
                 }
