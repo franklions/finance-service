@@ -1,10 +1,19 @@
 package com.franklions.finance;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.franklions.finance.domain.FinanceStockInfo;
+import com.franklions.finance.service.downloader.HtmlUnitDownloader;
+import com.franklions.finance.service.pipeline.FinanceStockDayPipeline;
+import com.franklions.finance.service.processor.SinaFinanceStockPageProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import us.codecraft.webmagic.Spider;
+import us.codecraft.webmagic.pipeline.ConsolePipeline;
+import us.codecraft.webmagic.scheduler.RedisScheduler;
+
+import java.util.List;
 
 /**
  * @author flsh
@@ -24,6 +33,19 @@ public class RunApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+
+        System.setProperty("http.keepAlive", "false");
+//        Spider spider = Spider.create(new SinaFinanceStockPageProcessor())
+//                .setDownloader(new HtmlUnitDownloader())
+//                .setScheduler(new RedisScheduler("localhost"))
+//                .thread(2);
+//
+//                spider.addUrl("http://finance.sina.com.cn/realstock/company/sh601313/nc.shtml?numtime="+ Math.random());
+//                spider.addUrl("http://finance.sina.com.cn/realstock/company/sh600835/nc.shtml?numtime="+ Math.random());
+//        spider.addUrl("http://finance.sina.com.cn/realstock/company/sh601313/nc.shtml?numtime="+ Math.random());
+//        spider.addUrl("http://finance.sina.com.cn/realstock/company/sh600835/nc.shtml?numtime="+ Math.random());
+//            spider.run();
+
         System.out.println(">>>>>>>>>>>>>running>>>>>>>>>>>>");
 
     }
