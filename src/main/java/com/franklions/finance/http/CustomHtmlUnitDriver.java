@@ -1,8 +1,6 @@
 package com.franklions.finance.http;
 
-import com.franklions.finance.http.CustomHttpWebConnection;
 import com.gargoylesoftware.htmlunit.BrowserVersion;
-import com.gargoylesoftware.htmlunit.HttpWebConnection;
 import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
 import com.gargoylesoftware.htmlunit.WebClient;
 import org.openqa.selenium.NoSuchSessionException;

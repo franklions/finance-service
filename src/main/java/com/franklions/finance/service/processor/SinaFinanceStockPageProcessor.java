@@ -33,32 +33,34 @@ public class SinaFinanceStockPageProcessor implements PageProcessor {
     public void process(Page page) {
         try {
             Long startTime = RequestUseTime.threadStartTime.get();
+
             //检查是否已退市 未上市 停牌股
+
             try {
-                String closed = page.getHtml().xpath("//*[@id=\"closed\"]/text(0)").get();
+                String closed = page.getHtml().xpath("//*[@id=\"closed\"]").get();
                 if(closed.trim().equals("已退市") ||closed.trim().equals("未上市")){
                     page.putField("closed", "true");
                     page.putField("stockCode", page.getHtml().xpath("//*[@id=\"stockName\"]/span/text(0)").get().trim().substring(1, 7));
                     return ;
                 }
-                BigDecimal price = strToDecimal(page.getHtml().xpath("//*[@id=\"hqDetails\"]/table/tbody/tr[1]/td[1]/text(0)").get().trim());
-                String closedStyle = page.getHtml().xpath("//*[@id=\"closed\"]/@style").toString();
-                if(price.compareTo(BigDecimal.ZERO)==0 || closedStyle.trim().equals("display: block;")){
+
+                String closedStyle = page.getHtml().xpath("//*[@id=\"trading\"]/@style").toString();
+                if(closedStyle.trim().equals("display: none;")){
                     page.setSkip(true);
                     return;
                 }
-
-                System.out.println("["+page.getHtml().xpath("//*[@id=\"stockName\"]/i/text(0)").get().trim()+ "]获取页面用时："+(System.currentTimeMillis() - startTime) );
+//                System.out.println("["+stockName + "]爬取用时："+(System.currentTimeMillis() - startTime));
             }catch (Exception  ex){
-
+                logger.error("获取退市信息异常.",ex);
             }
 
             //取出内容
             FinanceStockDay dayInfo = new FinanceStockDay();
-
             Selectable stock = page.getHtml().xpath("//*[@id=\"stockName\"]");
-            dayInfo.setStockCode(stock.xpath("//span/text(0)").get().trim().substring(1, 7));
-            dayInfo.setStockName(stock.xpath("//i/text(0)").get().trim());
+            String stockCode = stock.xpath("//span/text(0)").get().trim().substring(1, 7);
+            String stockName = stock.xpath("//i/text(0)").get().trim();
+            dayInfo.setStockCode(stockCode);
+            dayInfo.setStockName(stockName);
             dayInfo.setCompany(page.getHtml().xpath("/html/body/div[7]/div[4]/div[12]/p[2]/text(0)").get().trim());
             List<Selectable> blocks = page.getHtml().xpath("/html/body/div[7]/div[4]/div[12]/p[15]/a").nodes();
 
@@ -129,10 +131,10 @@ public class SinaFinanceStockPageProcessor implements PageProcessor {
         } catch (Exception e) {
             logger.error("爬取股票代码过程中序列化股票数据异常："+page.getHtml().xpath("//*[@id=\"stockName\"]").get(),e);
             //保存失败重新爬取
-//            Request newRequest = page.getRequest();
-//            newRequest.setUrl(page.getUrl().get()+"?numtime="+ Math.random());
-//            page.addTargetRequest(page.getRequest());
-//            page.setSkip(true);
+            Request newRequest = page.getRequest();
+            newRequest.setUrl(page.getUrl().get()+"?numtime="+ Math.random());
+            page.addTargetRequest(page.getRequest());
+            page.setSkip(true);
         }
     }
 

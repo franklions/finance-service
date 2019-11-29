@@ -15,16 +15,13 @@ import us.codecraft.webmagic.downloader.Downloader;
 import us.codecraft.webmagic.selector.Html;
 import us.codecraft.webmagic.selector.PlainText;
 
-import java.io.Closeable;
-import java.io.IOException;
-
 /**
  * @author flsh
  * @version 1.0
  * @date 2019-09-20
  * @since Jdk 1.8
  */
-public class HtmlUnitDownloader implements Downloader, Closeable {
+public class HtmlUnitDownloader implements Downloader {
 
     private static final ThreadLocal<CustomHtmlUnitDriver> driverPool = new ThreadLocal<>();
     private static final Logger logger = LoggerFactory.getLogger(HtmlUnitDownloader.class);
@@ -71,14 +68,4 @@ public class HtmlUnitDownloader implements Downloader, Closeable {
         this.poolSize = threadNum;
     }
 
-    @Override
-    public void close() throws IOException {
-//        CustomHtmlUnitDriver driver=driverPool.get();
-//        if(driver != null ){
-//            if(!driver.isClosed()){
-//                driver.close();
-//            }
-//            driverPool.remove();
-//        }
-    }
 }
