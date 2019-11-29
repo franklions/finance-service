@@ -35,16 +35,20 @@ public class RunApplication implements CommandLineRunner {
     public void run(String... args) throws Exception {
 
         System.setProperty("http.keepAlive", "false");
-//        Spider spider = Spider.create(new SinaFinanceStockPageProcessor())
-//                .setDownloader(new HtmlUnitDownloader())
-//                .setScheduler(new RedisScheduler("localhost"))
-//                .thread(2);
-//
-//                spider.addUrl("http://finance.sina.com.cn/realstock/company/sh601313/nc.shtml?numtime="+ Math.random());
-//                spider.addUrl("http://finance.sina.com.cn/realstock/company/sh600835/nc.shtml?numtime="+ Math.random());
-//        spider.addUrl("http://finance.sina.com.cn/realstock/company/sh601313/nc.shtml?numtime="+ Math.random());
-//        spider.addUrl("http://finance.sina.com.cn/realstock/company/sh600835/nc.shtml?numtime="+ Math.random());
-//            spider.run();
+        Spider spider = Spider.create(new SinaFinanceStockPageProcessor())
+                .setDownloader(new HtmlUnitDownloader())
+                .setScheduler(new RedisScheduler("localhost"))
+                .thread(1);
+
+                spider.addUrl("http://finance.sina.com.cn/realstock/company/sh601313/nc.shtml?numtime="+ Math.random());
+                spider.addUrl("http://finance.sina.com.cn/realstock/company/sh600835/nc.shtml?numtime="+ Math.random());
+                spider.addUrl("http://finance.sina.com.cn/realstock/company/sh600152/nc.shtml?numtime="+ Math.random());
+                spider.addUrl("http://finance.sina.com.cn/realstock/company/sh600159/nc.shtml?numtime="+ Math.random());
+        spider.addUrl("http://finance.sina.com.cn/realstock/company/sh600232/nc.shtml?numtime="+ Math.random());
+        spider.addUrl("http://finance.sina.com.cn/realstock/company/sh600239/nc.shtml?numtime="+ Math.random());
+        spider.addUrl("http://finance.sina.com.cn/realstock/company/sh600278/nc.shtml?numtime="+ Math.random());
+        spider.addUrl("http://finance.sina.com.cn/realstock/company/sh600310/nc.shtml?numtime="+ Math.random());
+            spider.run();
 
         System.out.println(">>>>>>>>>>>>>running>>>>>>>>>>>>");
 

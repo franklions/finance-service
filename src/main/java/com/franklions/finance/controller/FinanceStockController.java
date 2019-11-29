@@ -105,8 +105,8 @@ public class FinanceStockController {
                     .setScheduler(new RedisScheduler("localhost"))
                     .thread(10);
 
-            String today = "2019-11-26";
-            Integer pages = 8;
+            String today = "2019-11-28";
+            Integer pages = 7;
             for(int i =1;i<=pages;i++) {
                 spider.addUrl("http://stock.finance.sina.com.cn/stock/go.php/vIR_RatingNewest/index.phtml?num=60&p="+i+"&today="+today+"&numtime="+ Math.random());
             }

@@ -1,4 +1,4 @@
-package com.franklions.finance.service;
+package com.franklions.finance.http;
 
 import com.franklions.finance.http.CustomHttpWebConnection;
 import com.gargoylesoftware.htmlunit.BrowserVersion;
@@ -34,6 +34,7 @@ public class CustomHtmlUnitDriver extends HtmlUnitDriver {
         newWebClient.getOptions().setActiveXNative(false);
         newWebClient.getOptions().setCssEnabled(false);//是否启用CSS, 因为不需要展现页面, 所以不需要启用
         newWebClient.getOptions().setJavaScriptEnabled(true); //很重要，启用JS
+        newWebClient.getOptions().setDownloadImages(false);
         newWebClient.setAjaxController(new NicelyResynchronizingAjaxController());//很重要，设置支持AJAX
 
 //        webClient.getOptions().setTimeout(timeout);//设置“浏览器”的请求超时时间

@@ -2,6 +2,7 @@ package com.franklions.finance.service.processor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.franklions.finance.domain.FinanceStockDay;
+import com.franklions.finance.service.RequestUseTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import us.codecraft.webmagic.Page;
@@ -31,7 +32,7 @@ public class SinaFinanceStockPageProcessor implements PageProcessor {
     @Override
     public void process(Page page) {
         try {
-
+            Long startTime = RequestUseTime.threadStartTime.get();
             //检查是否已退市 未上市 停牌股
             try {
                 String closed = page.getHtml().xpath("//*[@id=\"closed\"]/text(0)").get();
@@ -46,6 +47,8 @@ public class SinaFinanceStockPageProcessor implements PageProcessor {
                     page.setSkip(true);
                     return;
                 }
+
+                System.out.println("["+page.getHtml().xpath("//*[@id=\"stockName\"]/i/text(0)").get().trim()+ "]获取页面用时："+(System.currentTimeMillis() - startTime) );
             }catch (Exception  ex){
 
             }
@@ -84,7 +87,6 @@ public class SinaFinanceStockPageProcessor implements PageProcessor {
             dayInfo.setChange(strToDecimal(page.getHtml().xpath("//*[@id=\"change\"]/text(0)").get().trim()));
 
             List<Selectable> hq_details = page.getHtml().xpath("//*[@id=\"hqDetails\"]/table/tbody/tr").nodes();
-
             dayInfo.setOpen(strToDecimal(hq_details.get(0).xpath("//tr/td[1]/text(0)").get().trim()));
             dayInfo.setVolume(strToDecimal(hq_details.get(0).xpath("//tr/td[2]/text(0)").get().trim()));
             dayInfo.setSwing(strToDecimal(hq_details.get(0).xpath("//tr/td[3]/text(0)").get().trim()));
@@ -127,10 +129,10 @@ public class SinaFinanceStockPageProcessor implements PageProcessor {
         } catch (Exception e) {
             logger.error("爬取股票代码过程中序列化股票数据异常："+page.getHtml().xpath("//*[@id=\"stockName\"]").get(),e);
             //保存失败重新爬取
-            Request newRequest = page.getRequest();
-            newRequest.setUrl(page.getUrl().get()+"?numtime="+ Math.random());
-            page.addTargetRequest(page.getRequest());
-            page.setSkip(true);
+//            Request newRequest = page.getRequest();
+//            newRequest.setUrl(page.getUrl().get()+"?numtime="+ Math.random());
+//            page.addTargetRequest(page.getRequest());
+//            page.setSkip(true);
         }
     }
 

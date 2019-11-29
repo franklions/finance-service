@@ -1,6 +1,6 @@
 package com.franklions.finance.service.downloader;
 
-import com.franklions.finance.service.CustomHtmlUnitDriver;
+import com.franklions.finance.http.CustomHtmlUnitDriver;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;

@@ -1,9 +1,9 @@
 package com.franklions.finance.service.downloader;
 
-import com.franklions.finance.service.CustomHtmlUnitDriver;
+import com.franklions.finance.http.CustomHtmlUnitDriver;
+import com.franklions.finance.service.RequestUseTime;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
@@ -26,7 +26,6 @@ import java.io.IOException;
  */
 public class HtmlUnitDownloader implements Downloader, Closeable {
 
-
     private static final ThreadLocal<CustomHtmlUnitDriver> driverPool = new ThreadLocal<>();
     private static final Logger logger = LoggerFactory.getLogger(HtmlUnitDownloader.class);
 //    final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20160101 Firefox/66.0";
@@ -35,32 +34,21 @@ public class HtmlUnitDownloader implements Downloader, Closeable {
 
     @Override
     public Page download(Request request, Task task) {
-//        BrowserVersion browser = new BrowserVersion.BrowserVersionBuilder(BrowserVersion.FIREFOX_60)
-//                .setApplicationName("Firefox")
-//                .setApplicationVersion("5.0 (Windows)")
-//                .setUserAgent(USER_AGENT)
-//                .build();
 
         CustomHtmlUnitDriver driver=driverPool.get();
         if(driver == null ){
             driver = new CustomHtmlUnitDriver();
+            driver.modifyWebClient();
             driverPool.set(driver);
         }
-        driver.modifyWebClient();
+
+        RequestUseTime.threadStartTime.set(System.currentTimeMillis());
+
         Page page = new Page();
         String content="";
         try {
-            //设置js脚本
-            driver.setJavascriptEnabled(true);
             driver.get(request.getUrl());
 
-//            WebElement element= (new WebDriverWait(dirver, 1 )).until(
-//                    new ExpectedCondition<WebElement>(){
-//                        @Override
-//                        public  WebElement apply( WebDriver d) {
-//                            return  d.findElement( By.xpath("/html/body/div[2]/div/div[2]/div/div[2]/div/div[3]/div[1]/div[2]" ));
-//                        }
-//                    });
             WebElement element = new WebDriverWait(driver,2).until(
                     ExpectedConditions.presenceOfElementLocated(By.className("pj_bar")));
             content = driver.getPageSource();
@@ -85,12 +73,12 @@ public class HtmlUnitDownloader implements Downloader, Closeable {
 
     @Override
     public void close() throws IOException {
-        CustomHtmlUnitDriver driver=driverPool.get();
-        if(driver != null ){
-            if(!driver.isClosed()){
-                driver.close();
-            }
-            driverPool.remove();
-        }
+//        CustomHtmlUnitDriver driver=driverPool.get();
+//        if(driver != null ){
+//            if(!driver.isClosed()){
+//                driver.close();
+//            }
+//            driverPool.remove();
+//        }
     }
 }
