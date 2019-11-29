@@ -5,7 +5,11 @@ import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
 import com.gargoylesoftware.htmlunit.WebClient;
 import org.openqa.selenium.NoSuchSessionException;
 import org.openqa.selenium.NoSuchWindowException;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
+
+import java.net.URL;
+import java.util.concurrent.*;
 
 /**
  * @author flsh
@@ -17,9 +21,16 @@ public class CustomHtmlUnitDriver extends HtmlUnitDriver {
     public CustomHtmlUnitDriver(BrowserVersion browser) {
         super(browser);
     }
-
+    private ExecutorService executor;
     public CustomHtmlUnitDriver(){
         super();
+//        int poolSize = Runtime.getRuntime().availableProcessors() * 2;
+        BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(512);
+        RejectedExecutionHandler policy = new ThreadPoolExecutor.DiscardPolicy();
+        executor = new ThreadPoolExecutor(10, 10,
+                0, TimeUnit.SECONDS,
+                queue,
+                policy);
     }
 
     public void modifyWebClient() {
@@ -46,6 +57,26 @@ public class CustomHtmlUnitDriver extends HtmlUnitDriver {
         WebClient client = super.newWebClient(version);
         client.setWebConnection(new CustomHttpWebConnection(client));
         return  client;
+    }
+
+    @Override
+    public void get(String url) {
+
+        if (WebClient.URL_ABOUT_BLANK.toString().equals(url)) {
+            get(WebClient.URL_ABOUT_BLANK);
+            return;
+        }
+
+        URL fullUrl;
+        try {
+            fullUrl = new URL(url);
+        } catch (Exception e) {
+            throw new WebDriverException(e);
+        }
+
+       CompletableFuture.runAsync(()->{
+           get(fullUrl);
+       },executor);
     }
 
     public Boolean isClosed(){

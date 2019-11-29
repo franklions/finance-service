@@ -2,7 +2,6 @@ package com.franklions.finance.service.processor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.franklions.finance.domain.FinanceStockDay;
-import com.franklions.finance.service.RequestUseTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import us.codecraft.webmagic.Page;
@@ -32,10 +31,7 @@ public class SinaFinanceStockPageProcessor implements PageProcessor {
     @Override
     public void process(Page page) {
         try {
-            Long startTime = RequestUseTime.threadStartTime.get();
-
             //检查是否已退市 未上市 停牌股
-
             try {
                 String closed = page.getHtml().xpath("//*[@id=\"closed\"]").get();
                 if(closed.trim().equals("已退市") ||closed.trim().equals("未上市")){
@@ -49,7 +45,7 @@ public class SinaFinanceStockPageProcessor implements PageProcessor {
                     page.setSkip(true);
                     return;
                 }
-//                System.out.println("["+stockName + "]爬取用时："+(System.currentTimeMillis() - startTime));
+
             }catch (Exception  ex){
                 logger.error("获取退市信息异常.",ex);
             }

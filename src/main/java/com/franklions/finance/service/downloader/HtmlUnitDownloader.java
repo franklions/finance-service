@@ -3,6 +3,7 @@ package com.franklions.finance.service.downloader;
 import com.franklions.finance.http.CustomHtmlUnitDriver;
 import com.franklions.finance.service.RequestUseTime;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -14,6 +15,8 @@ import us.codecraft.webmagic.Task;
 import us.codecraft.webmagic.downloader.Downloader;
 import us.codecraft.webmagic.selector.Html;
 import us.codecraft.webmagic.selector.PlainText;
+
+import java.net.URL;
 
 /**
  * @author flsh
@@ -31,7 +34,6 @@ public class HtmlUnitDownloader implements Downloader {
 
     @Override
     public Page download(Request request, Task task) {
-
         CustomHtmlUnitDriver driver=driverPool.get();
         if(driver == null ){
             driver = new CustomHtmlUnitDriver();
@@ -39,14 +41,13 @@ public class HtmlUnitDownloader implements Downloader {
             driverPool.set(driver);
         }
 
-        RequestUseTime.threadStartTime.set(System.currentTimeMillis());
-
         Page page = new Page();
         String content="";
         try {
+
             driver.get(request.getUrl());
 
-            WebElement element = new WebDriverWait(driver,2).until(
+            WebElement element = new WebDriverWait(driver,5).until(
                     ExpectedConditions.presenceOfElementLocated(By.className("pj_bar")));
             content = driver.getPageSource();
         } catch (Exception e) {
@@ -55,7 +56,6 @@ public class HtmlUnitDownloader implements Downloader {
         }finally {
 
         }
-
         page.setRawText(content);
         page.setHtml(new Html(content, request.getUrl()));
         page.setUrl(new PlainText(request.getUrl()));
