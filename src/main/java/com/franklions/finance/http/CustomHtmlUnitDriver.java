@@ -21,16 +21,16 @@ public class CustomHtmlUnitDriver extends HtmlUnitDriver {
     public CustomHtmlUnitDriver(BrowserVersion browser) {
         super(browser);
     }
-    private ExecutorService executor;
+//    private ExecutorService executor;
     public CustomHtmlUnitDriver(){
         super();
 //        int poolSize = Runtime.getRuntime().availableProcessors() * 2;
-        BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(512);
-        RejectedExecutionHandler policy = new ThreadPoolExecutor.DiscardPolicy();
-        executor = new ThreadPoolExecutor(10, 10,
-                0, TimeUnit.SECONDS,
-                queue,
-                policy);
+//        BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(512);
+//        RejectedExecutionHandler policy = new ThreadPoolExecutor.DiscardPolicy();
+//        executor = new ThreadPoolExecutor(10, 10,
+//                0, TimeUnit.SECONDS,
+//                queue,
+//                policy);
     }
 
     public void modifyWebClient() {
@@ -46,8 +46,8 @@ public class CustomHtmlUnitDriver extends HtmlUnitDriver {
         newWebClient.getOptions().setDownloadImages(false);
         newWebClient.setAjaxController(new NicelyResynchronizingAjaxController());//很重要，设置支持AJAX
 
-//        webClient.getOptions().setTimeout(timeout);//设置“浏览器”的请求超时时间
-//        webClient.setJavaScriptTimeout(timeout);//设置JS执行的超时时间
+        newWebClient.getOptions().setTimeout(2000);//设置“浏览器”的请求超时时间
+        newWebClient.setJavaScriptTimeout(2000);//设置JS执行的超时时间
 
         modifyWebClient(newWebClient);
     }
@@ -59,33 +59,23 @@ public class CustomHtmlUnitDriver extends HtmlUnitDriver {
         return  client;
     }
 
-    @Override
-    public void get(String url) {
-
-        if (WebClient.URL_ABOUT_BLANK.toString().equals(url)) {
-            get(WebClient.URL_ABOUT_BLANK);
-            return;
-        }
-
-        URL fullUrl;
-        try {
-            fullUrl = new URL(url);
-        } catch (Exception e) {
-            throw new WebDriverException(e);
-        }
-
-       CompletableFuture.runAsync(()->{
-           get(fullUrl);
-       },executor);
-    }
-
-    public Boolean isClosed(){
-        try {
-            getCurrentWindow();
-        }catch (NoSuchWindowException | NoSuchSessionException e){
-            return true;
-        }
-
-        return false;
-    }
+//    @Override
+//    public void get(String url) {
+//
+//        if (WebClient.URL_ABOUT_BLANK.toString().equals(url)) {
+//            get(WebClient.URL_ABOUT_BLANK);
+//            return;
+//        }
+//
+//        URL fullUrl;
+//        try {
+//            fullUrl = new URL(url);
+//        } catch (Exception e) {
+//            throw new WebDriverException(e);
+//        }
+//
+//       CompletableFuture.runAsync(()->{
+//           get(fullUrl);
+//       },executor);
+//    }
 }

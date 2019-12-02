@@ -26,7 +26,7 @@ import java.net.URL;
  */
 public class HtmlUnitDownloader implements Downloader {
 
-    private static final ThreadLocal<CustomHtmlUnitDriver> driverPool = new ThreadLocal<>();
+//    private static final ThreadLocal<CustomHtmlUnitDriver> driverPool = new ThreadLocal<>();
     private static final Logger logger = LoggerFactory.getLogger(HtmlUnitDownloader.class);
 //    final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20160101 Firefox/66.0";
 
@@ -34,13 +34,14 @@ public class HtmlUnitDownloader implements Downloader {
 
     @Override
     public Page download(Request request, Task task) {
-        CustomHtmlUnitDriver driver=driverPool.get();
-        if(driver == null ){
-            driver = new CustomHtmlUnitDriver();
-            driver.modifyWebClient();
-            driverPool.set(driver);
-        }
-
+//        CustomHtmlUnitDriver driver=driverPool.get();
+//        if(driver == null ){
+//            driver = new CustomHtmlUnitDriver();
+//            driver.modifyWebClient();
+//            driverPool.set(driver);
+//        }
+        CustomHtmlUnitDriver driver = new CustomHtmlUnitDriver();
+        driver.modifyWebClient();
         Page page = new Page();
         String content="";
         try {
@@ -54,7 +55,7 @@ public class HtmlUnitDownloader implements Downloader {
             logger.error("获取页页元素超时异常:"+request.getUrl(),e);
             content = driver.getPageSource();
         }finally {
-
+            driver.quit();
         }
         page.setRawText(content);
         page.setHtml(new Html(content, request.getUrl()));
